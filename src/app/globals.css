@@ -1,23 +1,55 @@
+/* archivo de estilos globales - se aplica a TODA la aplicacion */
+
+/* importamos tailwind css v4 (nueva sintaxis) */
+/* en v3 era: @tailwind base; @tailwind components; @tailwind utilities; */
+/* en v4 todo se importa con una sola linea */
 @import "tailwindcss";
 
+/* definimos variables de tema personalizadas */
+/* estas variables se pueden usar en cualquier parte con var(--nombre) */
+/* tambien se pueden usar en tailwind como bg-[var(--color-primary)] */
 @theme {
+  /* colores principales de spotify */
   --color-primary: #1DB954;
+  /* verde spotify (botones principales) */
   --color-secondary: #191414;
+  /* negro spotify (fondos oscuros) */
   --color-accent: #1ed760;
+  /* verde claro (hover states) */
+
+  /* colores de fondo */
   --color-bg-dark: #121212;
+  /* fondo principal de la app (negro-gris) */
   --color-bg-card: #181818;
+  /* fondo de tarjetas y widgets (gris oscuro) */
+
+  /* colores de texto */
   --color-text-primary: #FFFFFF;
+  /* texto principal (blanco) */
   --color-text-secondary: #B3B3B3;
+  /* texto secundario (gris claro) */
 }
 
+/* estilos para las etiquetas html y body */
+/* quitamos padding y margin por defecto del navegador */
 html,
 body {
   padding: 0;
+  /* sin padding interno */
   margin: 0;
+  /* sin margen externo */
+
+  /* aplicamos nuestras variables de tema */
   background-color: var(--color-bg-dark);
+  /* fondo oscuro */
   color: var(--color-text-primary);
+  /* texto blanco */
 }
 
+/* aplicamos box-sizing a todos los elementos */
+/* border-box hace que padding y border se incluyan en el width/height */
+/* sin esto, si pones width: 100px y padding: 10px, el ancho total seria 120px */
+/* con border-box, el ancho total es siempre 100px (mas intuitivo) */
 * {
   box-sizing: border-box;
 }

@@ -1,13 +1,20 @@
-// api route para refrescar el access_token cuando caduca
-// el access_token dura 1 hora, pero el refresh_token dura mucho mas
+// api route para refrescar (renovar) el access_token cuando caduca
+// el access_token de spotify solo dura 1 hora por seguridad
+// pero el refresh_token dura mucho mas tiempo (meses/años)
+// este endpoint usa el refresh_token para obtener un nuevo access_token
+// asi el usuario no tiene que volver a hacer login cada hora
 
 import { NextResponse } from 'next/server'
 
+// esta funcion se ejecuta cuando hacemos POST a /api/refresh-token
+// se llama desde lib/spotify.js cuando detectamos que el token expiro
 export async function POST(request) {
   try {
-    // recibimos el refresh_token que guardamos en el login inicial
+    // parseamos el body para obtener el refresh_token
+    // este refresh_token lo guardamos en localstorage durante el login inicial
     const { refresh_token } = await request.json()
 
+    // validacion: si no hay refresh_token, devolvemos error
     if (!refresh_token) {
       return NextResponse.json(
         { error: 'Missing refresh_token' },
@@ -15,20 +22,26 @@ export async function POST(request) {
       )
     }
 
+    // obtenemos las credenciales (igual que en el login inicial)
     const clientId = process.env.SPOTIFY_CLIENT_ID
     const clientSecret = process.env.SPOTIFY_CLIENT_SECRET
 
-    // misma autenticacion basic auth que en el login inicial
+    // preparamos la autenticacion basic auth (mismo proceso que antes)
+    // spotify requiere esto para validar que somos nosotros
     const basicAuth = Buffer.from(
       `${clientId}:${clientSecret}`
     ).toString('base64')
 
-    // grant_type: refresh_token significa "quiero un nuevo access_token"
+    // preparamos los parametros para spotify
+    // esta vez el grant_type es diferente: "refresh_token"
+    // esto le dice a spotify: "dame un nuevo access_token usando este refresh_token"
     const body = new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token,
+      grant_type: 'refresh_token',  // tipo de operacion: refrescar token
+      refresh_token,                // el refresh_token que tenemos guardado
     })
 
+    // hacemos la peticion al mismo endpoint de tokens
+    // es el mismo endpoint que para el login, pero con grant_type diferente
     const res = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
       headers: {
